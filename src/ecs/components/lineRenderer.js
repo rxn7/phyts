@@ -10,4 +10,7 @@ export class LineRenderer extends Component {
     removeLine(line) {
         this.lines.delete(line);
     }
+    clear() {
+        this.lines.clear();
+    }
 }

@@ -19,14 +19,3 @@ function update(time) {
     world.update(dt);
 }
 update(0);
-window.addEventListener('keydown', (ev) => {
-    scene.keyPressed(ev.key);
-});
-window.addEventListener('mousedown', (ev) => {
-    const rect = renderer.canvas.getBoundingClientRect();
-    const position = {
-        x: ev.clientX - rect.left,
-        y: ev.clientY - rect.top
-    };
-    scene.mousePressed(position, ev.button);
-});

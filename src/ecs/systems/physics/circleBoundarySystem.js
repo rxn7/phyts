@@ -9,13 +9,17 @@ export var BoundaryType;
     BoundaryType[BoundaryType["Circle"] = 1] = "Circle";
 })(BoundaryType || (BoundaryType = {}));
 export class CircleBoundarySystem extends System {
-    constructor(type, width, height, renderer) {
+    constructor(type, renderer) {
         super();
         this.type = type;
-        this.width = width;
-        this.height = height;
         this.renderer = renderer;
         this.requiredComponents = new Set([Position, Velocity, Circle]);
+        this.width = renderer.canvas.clientWidth;
+        this.height = renderer.canvas.clientHeight;
+        addEventListener('rendererResize', (ev) => {
+            this.width = ev.detail.width;
+            this.height = ev.detail.height;
+        });
     }
     update(entities, dt) {
         this.renderer.ctx.beginPath();
@@ -79,7 +83,7 @@ export class CircleBoundarySystem extends System {
         const dot = velocity.velocity.x * normal.x + velocity.velocity.y * normal.y;
         velocity.velocity.x -= 2 * dot * normal.x;
         velocity.velocity.y -= 2 * dot * normal.y;
-        position.position = Vec2.add(center, Vec2.mul(normal, boundaryRadius - circle.radius));
+        position.position = Vec2.add(center, Vec2.mul(normal, boundaryRadius - circle.radius - 0.001));
         const collisionEvent = new CustomEvent("boundaryCollision", { detail: { entity: entity, point: Vec2.add(position.position, Vec2.mul(normal, circle.radius)), velocity: velocity.velocity } });
         dispatchEvent(collisionEvent);
     }

@@ -34,7 +34,7 @@ export class Sound {
             return;
         });
     }
-    play(volume = 1.0, pitch = 1.0) {
+    play(pitch = 1.0) {
         if (!this.buffer || !context) {
             return;
         }
@@ -45,10 +45,8 @@ export class Sound {
             source.stop(0);
             this.sources.delete(source);
         });
-        const gainNode = context.createGain();
-        gainNode.gain.value = volume;
         source.playbackRate.value = pitch;
-        source.connect(gainNode).connect(context.destination);
+        source.connect(context.destination);
         source.start(0);
     }
 }
