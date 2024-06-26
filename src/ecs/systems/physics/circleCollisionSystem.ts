@@ -1,3 +1,4 @@
+import { CollisionEvent } from "../../../events/collisionEvent.js"
 import { Vec2 } from "../../../vec2.js"
 import { ComponentContainer } from "../../componentContainer.js"
 import { Circle } from "../../components/circle.js"
@@ -59,6 +60,11 @@ export class CircleCollisionSystem extends System {
 				b.position.position = Vec2.add(b.position.position, normal)
 
 				this.collisions.add({a, b})
+
+				const event: CustomEvent = new CustomEvent<CollisionEvent>("collision", { 
+					detail: { entityA: entityA, entityB: entityB, velocity: Vec2.add(a.velocity.velocity, b.velocity.velocity) } 
+				})
+				dispatchEvent(event)
 			}
 		}
 

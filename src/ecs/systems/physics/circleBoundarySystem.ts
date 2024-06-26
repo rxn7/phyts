@@ -15,6 +15,7 @@ export enum BoundaryType {
 export type BoundaryCollisionEvent = {
 	entity: Entity
 	point: Vec2
+	velocity: Vec2
 }
 
 declare global {
@@ -39,7 +40,10 @@ export class CircleBoundarySystem extends System {
 				break
 
 			case BoundaryType.Circle:
-				this.renderer.ctx.arc(this.width * 0.5, this.height * 0.5, Math.min(this.width, this.height) * 0.5, 0, 2 * Math.PI)
+				this.renderer.ctx.beginPath()
+				this.renderer.ctx.arc(this.renderer.canvas.clientWidth * 0.5, this.renderer.canvas.clientHeight * 0.5, Math.min(this.renderer.canvas.clientWidth, this.renderer.canvas.clientHeight) * 0.5, 0, 2 * Math.PI)
+				this.renderer.ctx.fillStyle = "#282828"
+				this.renderer.ctx.fill()
 				break
 		}
 
@@ -102,7 +106,7 @@ export class CircleBoundarySystem extends System {
 
 		position.position = Vec2.add(center, Vec2.mul(normal, boundaryRadius - circle.radius))
 
-		const collisionEvent: Event = new CustomEvent<BoundaryCollisionEvent>("boundaryCollision", { detail: { entity: entity, point: Vec2.add(position.position, Vec2.mul(normal, circle.radius)) } })
+		const collisionEvent: Event = new CustomEvent<BoundaryCollisionEvent>("boundaryCollision", { detail: { entity: entity, point: Vec2.add(position.position, Vec2.mul(normal, circle.radius)), velocity: velocity.velocity } })
 		dispatchEvent(collisionEvent)
 	}
 }

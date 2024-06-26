@@ -12,24 +12,38 @@ import { CircleCollisionSystem } from "../ecs/systems/physics/circleCollisionSys
 import { Vec2 } from "../vec2.js";
 import { LineRendererSystem } from "../ecs/systems/rendering/lineRendererSystem.js";
 import { LineRenderer } from "../ecs/components/lineRenderer.js";
+import { Sound } from "../audio.js";
+import { ComponentContainer } from "../ecs/componentContainer.js";
+import { CollisionEvent } from "../events/collisionEvent.js";
 
-const VELOCITY_MIN: number = 20
-const VELOCITY_MAX: number = 35
 const RADIUS_MIN: number = 20
 const RADIUS_MAX: number = 40
 
 export class BallsScene extends Scene {
+	private readonly hitSound: Sound = new Sound("audio/ball.wav")
+
 	public constructor(private readonly renderer: Renderer) {
 		super()
+
 		this.world.addSystem(new CircleCollisionSystem())
 		this.world.addSystem(new CircleBoundarySystem(BoundaryType.Circle, renderer.canvas.clientWidth, renderer.canvas.clientHeight, renderer))
-		this.world.addSystem(new VelocitySystem(20, 0.0))
+		this.world.addSystem(new VelocitySystem(7.0, 0.0))
 		this.world.addSystem(new LineRendererSystem(renderer))
 		this.world.addSystem(new CircleRenderSystem(renderer))
 
 		addEventListener("boundaryCollision", (ev: CustomEvent<BoundaryCollisionEvent>) => {
-			const lineRenderer: LineRenderer = this.world.getEntityComponents(ev.detail.entity).get(LineRenderer)
+			const container: ComponentContainer = this.world.getEntityComponents(ev.detail.entity)
+
+			const lineRenderer: LineRenderer = container.get(LineRenderer)
 			lineRenderer.addLine({end: ev.detail.point})
+
+			const velocity: Velocity = container.get(Velocity)
+
+			this.hitSound.play(1.0, Vec2.length(velocity.velocity) * 0.02)
+		})
+
+		addEventListener("collision", (ev: CustomEvent<CollisionEvent>) => {
+			this.hitSound.play(1.0, Vec2.length(ev.detail.velocity) * 0.02)
 		})
 	}
 

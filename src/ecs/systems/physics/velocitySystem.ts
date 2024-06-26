@@ -24,7 +24,7 @@ export class VelocitySystem extends System {
 
 			position.position = Vec2.add(position.position, Vec2.mul(velocity.velocity, dt))
 			
-			if(Math.abs(Vec2.lengthSqr(velocity.velocity)) < 0.01) {
+			if(Math.abs(Vec2.lengthSqr(velocity.velocity)) < 0.0001) {
 				velocity.velocity = Vec2.zero
 			}
 		}

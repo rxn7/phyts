@@ -11,19 +11,19 @@ let scene: Scene = new BallsScene(renderer)
 let previousTime: DOMHighResTimeStamp = 0
 
 function getDeltaTime(time: DOMHighResTimeStamp): number {
-	const dt: number = Math.max((time - previousTime) / 1000, 1/10)
+	const dt: number = (time - previousTime) / (1000 / 60)
 	previousTime = time
 	return dt
 }
 
 function update(time: DOMHighResTimeStamp): void {
+	requestAnimationFrame(update)
+
 	const dt: number = getDeltaTime(time)
 	renderer.clear()
 
 	scene.update(dt)
 	world.update(dt)
-
-	requestAnimationFrame(update)
 }
 
 update(0)
