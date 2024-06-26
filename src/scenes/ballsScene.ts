@@ -8,6 +8,7 @@ import { CircleRenderSystem } from "../ecs/systems/rendering/circleRenderSystem.
 import { Renderer } from "../renderer.js";
 import { Color } from "../ecs/components/color.js";
 import { CircleBoundarySystem } from "../ecs/systems/physics/circleBoundarySystem.js";
+import { CircleCollisionSystem } from "../ecs/systems/physics/circleCollisionSystem.js";
 
 const VELOCITY_MIN: number = 10
 const VELOCITY_MAX: number = 15
@@ -19,6 +20,7 @@ export class BallsScene extends Scene {
 		super()
 		this.world.addSystem(new VelocitySystem(20, 0.1))
 		this.world.addSystem(new CircleBoundarySystem(renderer.canvas.clientWidth, renderer.canvas.clientHeight))
+		this.world.addSystem(new CircleCollisionSystem())
 		this.world.addSystem(new CircleRenderSystem(renderer))
 
 		this.spawnBall()

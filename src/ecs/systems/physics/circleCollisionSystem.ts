@@ -8,10 +8,6 @@ import { System } from "../../system.js"
 export class CircleCollisionSystem extends System {
 	public requiredComponents: Set<Function> = new Set([Position, Velocity, Circle])
 
-	public constructor(public width: number, public height: number) {
-		super()
-	}
-
 	public update(entities: Set<Entity>, dt: number): void {
 		for(const entityA of entities) {
 			for(const entityB of entities) {
@@ -31,10 +27,24 @@ export class CircleCollisionSystem extends System {
 				const dy: number = positionA.y - positionB.y
 				const distanceSqr: number = dx * dx + dy * dy
 
-				if(distanceSqr >= (circleA.radius + circleB.radius) * (circleA.radius + circleB.radius)) {
+				if(!CircleCollisionSystem.circlesOverlap(circleA, circleB, distanceSqr)) {
 					continue
 				}
+
+				const distance = Math.sqrt(distanceSqr)
+				const overlap: number = (distance - circleA.radius - circleB.radius) * 0.5
+
+				positionA.x -= overlap * dx / distance;
+				positionA.y -= overlap * dy / distance;
+
+				positionB.x += overlap * dx / distance;
+				positionB.y += overlap * dy / distance;
 			}
 		}
+	}
+
+	private static circlesOverlap(a: Circle, b: Circle, distanceSqr: number): boolean {
+		const sum: number = a.radius + b.radius
+		return distanceSqr < sum * sum
 	}
 }
