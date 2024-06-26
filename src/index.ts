@@ -2,6 +2,7 @@ import { World } from "./ecs/world.js"
 import { Scene } from "./scenes/scene.js"
 import { BallsScene } from "./scenes/ballsScene.js"
 import { Renderer } from "./renderer.js"
+import { Vec2 } from "./vec2.js"
 
 const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement
 const renderer: Renderer = new Renderer(canvas)
@@ -33,7 +34,10 @@ window.addEventListener('keydown', (ev: KeyboardEvent) => {
 
 window.addEventListener('mousedown', (ev: MouseEvent) => {
 	const rect: DOMRect = renderer.canvas.getBoundingClientRect()
-	const x: number = ev.clientX - rect.left
-	const y: number = ev.clientY - rect.top
-	scene.mousePressed(x, y, ev.button)
+	const position: Vec2 = {
+		x: ev.clientX - rect.left,
+		y: ev.clientY - rect.top
+	}
+
+	scene.mousePressed(position, ev.button)
 })

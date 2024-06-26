@@ -1,4 +1,5 @@
 import { World } from "../ecs/world.js";
+import { Vec2 } from "../vec2.js";
 
 export abstract class Scene {
 	protected readonly world: World
@@ -13,5 +14,5 @@ export abstract class Scene {
 
 	public keyPressed(key: string): void {}
 
-	public mousePressed(mouseX: number, mouseY: number, btn: number): void {}
+	public mousePressed(position: Vec2, btn: number): void {}
 }

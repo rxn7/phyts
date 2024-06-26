@@ -17,10 +17,7 @@ export class World {
 			system.update(entities, dt);
 		}
 
-		while(this.entityDestroyQueue.length != 0) {
-			const entity: Entity = this.entityDestroyQueue.pop() as Entity
-			this.destroyEntity(entity)
-		}
+		this.destroyQueuedEntities()
 	}
 
 	public spawnEntity(): Entity {
@@ -87,5 +84,12 @@ export class World {
 		}
 
 		entities.add(entity)
+	}
+
+	private destroyQueuedEntities(): void {
+		while(this.entityDestroyQueue.length != 0) {
+			const entity: Entity = this.entityDestroyQueue.pop() as Entity
+			this.destroyEntity(entity)
+		}
 	}
 }

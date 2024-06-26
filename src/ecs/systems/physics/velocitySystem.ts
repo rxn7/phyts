@@ -1,4 +1,5 @@
-import { ComponentContainer } from "../../componentContainer"
+import { Vec2 } from "../../../vec2.js"
+import { ComponentContainer } from "../../componentContainer.js"
 import { Position } from "../../components/position.js"
 import { Velocity } from "../../components/velocity.js"
 import { Entity } from "../../entity.js"
@@ -17,18 +18,14 @@ export class VelocitySystem extends System {
 			const position: Position = container.get(Position)
 			const velocity: Velocity = container.get(Velocity)
 
-			velocity.ax = -velocity.vx * this.dragCoeff
-			velocity.ay = -velocity.vy * this.dragCoeff
+			velocity.acceleration = Vec2.mul(velocity.velocity, -this.dragCoeff)
+			velocity.velocity = Vec2.add(velocity.velocity, Vec2.mul(velocity.acceleration, dt))
+			velocity.velocity.y += this.gravity * dt
 
-			velocity.vx += velocity.ax * dt
-			velocity.vy += velocity.ay * dt
-			velocity.vy += this.gravity * dt
-			position.x += velocity.vx * dt
-			position.y += velocity.vy * dt
-
-			if(Math.abs(velocity.vx * velocity.vx + velocity.vy * velocity.vy) < 0.01) {
-				velocity.vx = 0
-				velocity.vy = 0
+			position.position = Vec2.add(position.position, Vec2.mul(velocity.velocity, dt))
+			
+			if(Math.abs(Vec2.lengthSqr(velocity.velocity)) < 0.01) {
+				velocity.velocity = Vec2.zero
 			}
 		}
 	}

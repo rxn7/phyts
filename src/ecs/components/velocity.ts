@@ -1,20 +1,18 @@
+import { Vec2 } from "../../vec2.js"
 import { Component } from "../component.js"
 
 export class Velocity extends Component {
-	public ax: number = 0
-	public ay: number = 0
-
-	public constructor(public vx: number = 0, public vy: number = 0) {
+	public constructor(public velocity: Vec2 = Vec2.zero, public acceleration: Vec2 = Vec2.zero) {
 		super()
 	}
 
 	public flipX(): void {
-		this.vx *= -1
-		this.ax *= -1
+		this.velocity.x *= -1
+		this.acceleration.x *= -1
 	}
 
 	public flipY(): void {
-		this.vy *= -1
-		this.ay *= -1
+		this.velocity.y *= -1
+		this.acceleration.y *= -1
 	}
 }

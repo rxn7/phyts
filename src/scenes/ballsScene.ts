@@ -9,6 +9,7 @@ import { Renderer } from "../renderer.js";
 import { Color } from "../ecs/components/color.js";
 import { CircleBoundarySystem } from "../ecs/systems/physics/circleBoundarySystem.js";
 import { CircleCollisionSystem } from "../ecs/systems/physics/circleCollisionSystem.js";
+import { Vec2 } from "../vec2.js";
 
 const VELOCITY_MIN: number = 20
 const VELOCITY_MAX: number = 35
@@ -30,23 +31,26 @@ export class BallsScene extends Scene {
 		super.update(dt);
 	}
 
-	public override mousePressed(mouseX: number, mouseY: number, btn: number): void {
+	public override mousePressed(position: Vec2, btn: number): void {
 		switch(btn) {
 			case 0:
-				this.spawnBall(mouseX, mouseY)
+				this.spawnBall(position)
 		}
 	}
 
-	public spawnBall(x: number = Math.random() * this.renderer.canvas.clientWidth, y: number = Math.random() * this.renderer.canvas.clientHeight): void {
+	public spawnBall(position: Vec2 = {x: Math.random() * this.renderer.canvas.clientWidth, y: Math.random() * this.renderer.canvas.clientHeight}): void {
 		const entity: Entity = this.world.spawnEntity()
 		this.world.addEntityComponent(entity, new Circle(Math.random() * (RADIUS_MAX - RADIUS_MIN) + RADIUS_MIN))
 		this.world.addEntityComponent(entity, new Color(Math.random() * 255, Math.random() * 255, Math.random() * 255))
-		this.world.addEntityComponent(entity, new Position(x, y))
+		this.world.addEntityComponent(entity, new Position(position))
 
 		const velocity: Velocity = this.world.addEntityComponent(entity, new Velocity()) as Velocity
 		const speed: number = Math.random() * (VELOCITY_MAX - VELOCITY_MIN) + VELOCITY_MIN
-		velocity.vx = speed * (Math.random() > 0.5 ? 1 : -1)
-		velocity.vy = speed * (Math.random() > 0.5 ? 1 : -1)
+
+		velocity.velocity = {
+			x: speed * (Math.random() > 0.5 ? 1 : -1),
+			y: speed * (Math.random() > 0.5 ? 1 : -1)
+		}
 
 		console.log(`Balls spawned: ${this.world.getEntityCount()}`)
 	}

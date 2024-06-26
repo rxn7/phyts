@@ -19,19 +19,19 @@ export class CircleBoundarySystem extends System {
 			const velocity: Velocity = container.get(Velocity)
 			const circle: Circle = container.get(Circle)
 
-			if(position.x - circle.radius < 0) {
-				position.x = circle.radius 
+			if(position.position.x - circle.radius < 0) {
+				position.position.x = circle.radius 
 				velocity.flipX()
-			} else if(position.x + circle.radius > this.width) {
-				position.x = this.width - circle.radius
+			} else if(position.position.x + circle.radius > this.width) {
+				position.position.x = this.width - circle.radius
 				velocity.flipX()
 			}
 
-			if(position.y - circle.radius < 0) {
-				position.y = circle.radius 
+			if(position.position.y - circle.radius < 0) {
+				position.position.y = circle.radius 
 				velocity.flipY()
-			} else if(position.y + circle.radius > this.height) {
-				position.y = this.height - circle.radius
+			} else if(position.position.y + circle.radius > this.height) {
+				position.position.y = this.height - circle.radius
 				velocity.flipY()
 			}
 		}

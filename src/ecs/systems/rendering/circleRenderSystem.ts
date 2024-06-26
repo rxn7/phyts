@@ -21,7 +21,7 @@ export class CircleRenderSystem extends System {
 			const color: Color = container.get(Color)
 
 			this.renderer.ctx.beginPath()
-			this.renderer.ctx.arc(position.x, position.y, circle.radius, 0, 2 * Math.PI)
+			this.renderer.ctx.arc(position.position.x, position.position.y, circle.radius, 0, 2 * Math.PI)
 			this.renderer.ctx.fillStyle = color.toString()
 			this.renderer.ctx.fill()
 		}
