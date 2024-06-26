@@ -13,7 +13,7 @@ export class CircleRenderSystem extends System {
 		super()
 	}
 
-	public update(entities: Set<Entity>, dt: number): void {
+	public override update(entities: Set<Entity>, dt: number): void {
 		for(const entity of entities) {
 			const container: ComponentContainer = this.world?.getEntityComponents(entity) as ComponentContainer
 			const position: Position = container.get(Position)

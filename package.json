@@ -22,7 +22,7 @@
 		"minify": "minify static/index.html > build/index.html & minify static/style.css > build/style.css",
 		"build:src": "mkdir -p build ; tsc --project $(pwd)",
 		"build_static": "mkdir -p build ; cp -r static/* ./build",
-		"build": "npm-run-all --parallel build:src build:static",
+		"build": "npm-run-all --parallel build:src build_static",
 		"watch:src": "tsc --watch --project $(pwd)",
 		"deploy": "npm run build && npm run minify && gh-pages --dist build",
 		"ls": "live-server build",

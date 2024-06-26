@@ -12,7 +12,7 @@ export class CircleBoundarySystem extends System {
 		super()
 	}
 
-	public update(entities: Set<Entity>, dt: number): void {
+	public override update(entities: Set<Entity>, dt: number): void {
 		for(const entity of entities) {
 			const container: ComponentContainer = this.world?.getEntityComponents(entity) as ComponentContainer
 			const position: Position = container.get(Position)
@@ -20,7 +20,7 @@ export class CircleBoundarySystem extends System {
 			const circle: Circle = container.get(Circle)
 
 			if(position.x - circle.radius < 0) {
-				position.x = circle.radius
+				position.x = circle.radius 
 				velocity.flipX()
 			} else if(position.x + circle.radius > this.width) {
 				position.x = this.width - circle.radius
@@ -28,7 +28,7 @@ export class CircleBoundarySystem extends System {
 			}
 
 			if(position.y - circle.radius < 0) {
-				position.y = circle.radius
+				position.y = circle.radius 
 				velocity.flipY()
 			} else if(position.y + circle.radius > this.height) {
 				position.y = this.height - circle.radius

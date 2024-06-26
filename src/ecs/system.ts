@@ -5,5 +5,5 @@ export abstract class System {
 	public world: World | null = null
 	public abstract requiredComponents: Set<Function>
 
-	public abstract update(entties: Set<Entity>, dt: number): void
+	public update(entties: Set<Entity>, dt: number): void {}
 }

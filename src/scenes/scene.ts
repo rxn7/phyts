@@ -12,4 +12,6 @@ export abstract class Scene {
 	}
 
 	public keyPressed(key: string): void {}
+
+	public mousePressed(mouseX: number, mouseY: number, btn: number): void {}
 }

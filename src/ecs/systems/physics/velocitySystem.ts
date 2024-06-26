@@ -11,7 +11,7 @@ export class VelocitySystem extends System {
 		super()
 	}
 
-	public update(entities: Set<Entity>, dt: number): void {
+	public override update(entities: Set<Entity>, dt: number): void {
 		for(const entity of entities) {
 			const container: ComponentContainer = this.world?.getEntityComponents(entity) as ComponentContainer
 			const position: Position = container.get(Position)
@@ -22,7 +22,7 @@ export class VelocitySystem extends System {
 
 			velocity.vx += velocity.ax * dt
 			velocity.vy += velocity.ay * dt
-			velocity.vy += this.gravity * dt // TODO: Should gravity change accel or vel?
+			velocity.vy += this.gravity * dt
 			position.x += velocity.vx * dt
 			position.y += velocity.vy * dt
 

@@ -30,3 +30,10 @@ update(0)
 window.addEventListener('keydown', (ev: KeyboardEvent) => {
 	scene.keyPressed(ev.key)
 })
+
+window.addEventListener('mousedown', (ev: MouseEvent) => {
+	const rect: DOMRect = renderer.canvas.getBoundingClientRect()
+	const x: number = ev.clientX - rect.left
+	const y: number = ev.clientY - rect.top
+	scene.mousePressed(x, y, ev.button)
+})
