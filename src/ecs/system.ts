@@ -6,4 +6,5 @@ export abstract class System {
 	public abstract requiredComponents: Set<Function>
 
 	public update(entties: Set<Entity>, dt: number): void {}
+	public physicsUpdate(entities: Set<Entity>, dt: number): void {}
 }

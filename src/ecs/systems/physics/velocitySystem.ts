@@ -12,7 +12,7 @@ export class VelocitySystem extends System {
 		super()
 	}
 
-	public override update(entities: Set<Entity>, dt: number): void {
+	public override physicsUpdate(entities: Set<Entity>, dt: number): void {
 		for(const entity of entities) {
 			const container: ComponentContainer = this.world?.getEntityComponents(entity) as ComponentContainer
 			const position: Position = container.get(Position)

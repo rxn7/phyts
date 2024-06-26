@@ -19,10 +19,10 @@ type Collision = {
 
 export class CircleCollisionSystem extends System {
 	public requiredComponents: Set<Function> = new Set([Position, Velocity, Circle])
-	private collisions: Array<Collision> = [];
+	private collisions: Set<Collision> = new Set()
 
-	public override update(entities: Set<Entity>, dt: number): void {
-		this.collisions.length = 0
+	public override physicsUpdate(entities: Set<Entity>, dt: number): void {
+		this.collisions.clear()
 
 		// static resolution
 		for(const entityA of entities) {
@@ -58,7 +58,7 @@ export class CircleCollisionSystem extends System {
 				a.position.position = Vec2.sub(a.position.position, normal)
 				b.position.position = Vec2.add(b.position.position, normal)
 
-				this.collisions.push({a, b})
+				this.collisions.add({a, b})
 			}
 		}
 

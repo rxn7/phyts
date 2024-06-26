@@ -3,6 +3,8 @@ import { ComponentContainer } from "./componentContainer.js"
 import { Entity } from "./entity.js"
 import { System } from "./system.js"
 
+const SIMULATION_UPDATES: number = 20
+
 export class World {
 	private entities: Map<Entity, ComponentContainer> = new Map()
 	private systems: Map<System, Set<Entity>> = new Map()
@@ -13,10 +15,8 @@ export class World {
 	public getEntityCount = (): number => this.entities.size
 
 	public update(dt: number): void {
-		for(let [system, entities] of this.systems.entries()) {
-			system.update(entities, dt);
-		}
-
+		this.updateSystems(dt)
+		this.updatePhysics(dt)
 		this.destroyQueuedEntities()
 	}
 
@@ -90,6 +90,21 @@ export class World {
 		while(this.entityDestroyQueue.length != 0) {
 			const entity: Entity = this.entityDestroyQueue.pop() as Entity
 			this.destroyEntity(entity)
+		}
+	}
+
+	private updateSystems(dt: number): void {
+		for(let [system, entities] of this.systems.entries()) {
+			system.update(entities, dt);
+		}
+	}
+
+	private updatePhysics(dt: number): void {
+		const physicsDt: number = dt / SIMULATION_UPDATES
+		for(let i: number = 0; i < SIMULATION_UPDATES; i++) {
+			for(let [system, entities] of this.systems.entries()) {
+				system.physicsUpdate(entities, physicsDt);
+			}
 		}
 	}
 }
