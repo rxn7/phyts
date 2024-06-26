@@ -1,4 +1,5 @@
 import { ComponentContainer } from "./componentContainer.js";
+const SIMULATION_UPDATES = 20;
 export class World {
     constructor() {
         this.entities = new Map();
@@ -8,13 +9,9 @@ export class World {
         this.getEntityCount = () => this.entities.size;
     }
     update(dt) {
-        for (let [system, entities] of this.systems.entries()) {
-            system.update(entities, dt);
-        }
-        while (this.entityDestroyQueue.length != 0) {
-            const entity = this.entityDestroyQueue.pop();
-            this.destroyEntity(entity);
-        }
+        this.updateSystems(dt);
+        this.updatePhysics(dt);
+        this.destroyQueuedEntities();
     }
     spawnEntity() {
         const entity = this.nextEntityId++;
@@ -67,5 +64,24 @@ export class World {
             return;
         }
         entities.add(entity);
+    }
+    destroyQueuedEntities() {
+        while (this.entityDestroyQueue.length != 0) {
+            const entity = this.entityDestroyQueue.pop();
+            this.destroyEntity(entity);
+        }
+    }
+    updateSystems(dt) {
+        for (let [system, entities] of this.systems.entries()) {
+            system.update(entities, dt);
+        }
+    }
+    updatePhysics(dt) {
+        const physicsDt = dt / SIMULATION_UPDATES;
+        for (let i = 0; i < SIMULATION_UPDATES; i++) {
+            for (let [system, entities] of this.systems.entries()) {
+                system.physicsUpdate(entities, physicsDt);
+            }
+        }
     }
 }

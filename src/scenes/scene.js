@@ -7,5 +7,5 @@ export class Scene {
         this.world.update(dt);
     }
     keyPressed(key) { }
-    mousePressed(mouseX, mouseY, btn) { }
+    mousePressed(position, btn) { }
 }

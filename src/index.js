@@ -7,16 +7,16 @@ const world = new World();
 let scene = new BallsScene(renderer);
 let previousTime = 0;
 function getDeltaTime(time) {
-    const dt = Math.max((time - previousTime) / 1000, 1 / 10);
+    const dt = (time - previousTime) / (1000 / 60);
     previousTime = time;
     return dt;
 }
 function update(time) {
+    requestAnimationFrame(update);
     const dt = getDeltaTime(time);
     renderer.clear();
     scene.update(dt);
     world.update(dt);
-    requestAnimationFrame(update);
 }
 update(0);
 window.addEventListener('keydown', (ev) => {
@@ -24,7 +24,9 @@ window.addEventListener('keydown', (ev) => {
 });
 window.addEventListener('mousedown', (ev) => {
     const rect = renderer.canvas.getBoundingClientRect();
-    const x = ev.clientX - rect.left;
-    const y = ev.clientY - rect.top;
-    scene.mousePressed(x, y, ev.button);
+    const position = {
+        x: ev.clientX - rect.left,
+        y: ev.clientY - rect.top
+    };
+    scene.mousePressed(position, ev.button);
 });

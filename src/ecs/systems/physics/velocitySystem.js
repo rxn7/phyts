@@ -1,3 +1,4 @@
+import { Vec2 } from "../../../vec2.js";
 import { Position } from "../../components/position.js";
 import { Velocity } from "../../components/velocity.js";
 import { System } from "../../system.js";
@@ -8,21 +9,17 @@ export class VelocitySystem extends System {
         this.dragCoeff = dragCoeff;
         this.requiredComponents = new Set([Position, Velocity]);
     }
-    update(entities, dt) {
+    physicsUpdate(entities, dt) {
         for (const entity of entities) {
             const container = this.world?.getEntityComponents(entity);
             const position = container.get(Position);
             const velocity = container.get(Velocity);
-            velocity.ax = -velocity.vx * this.dragCoeff;
-            velocity.ay = -velocity.vy * this.dragCoeff;
-            velocity.vx += velocity.ax * dt;
-            velocity.vy += velocity.ay * dt;
-            velocity.vy += this.gravity * dt;
-            position.x += velocity.vx * dt;
-            position.y += velocity.vy * dt;
-            if (Math.abs(velocity.vx * velocity.vx + velocity.vy * velocity.vy) < 0.01) {
-                velocity.vx = 0;
-                velocity.vy = 0;
+            velocity.acceleration = Vec2.mul(velocity.velocity, -this.dragCoeff);
+            velocity.velocity = Vec2.add(velocity.velocity, Vec2.mul(velocity.acceleration, dt));
+            velocity.velocity.y += this.gravity * dt;
+            position.position = Vec2.add(position.position, Vec2.mul(velocity.velocity, dt));
+            if (Math.abs(Vec2.lengthSqr(velocity.velocity)) < 0.0001) {
+                velocity.velocity = Vec2.zero;
             }
         }
     }

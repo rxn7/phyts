@@ -1,3 +1,4 @@
+import { Vec2 } from "../../../vec2.js";
 import { Circle } from "../../components/circle.js";
 import { Position } from "../../components/position.js";
 import { Velocity } from "../../components/velocity.js";
@@ -6,10 +7,10 @@ export class CircleCollisionSystem extends System {
     constructor() {
         super(...arguments);
         this.requiredComponents = new Set([Position, Velocity, Circle]);
-        this.collisions = [];
+        this.collisions = new Set();
     }
-    update(entities, dt) {
-        this.collisions.length = 0;
+    physicsUpdate(entities, dt) {
+        this.collisions.clear();
         for (const entityA of entities) {
             for (const entityB of entities) {
                 if (entityA == entityB)
@@ -26,39 +27,36 @@ export class CircleCollisionSystem extends System {
                     position: containerB.get(Position),
                     velocity: containerB.get(Velocity)
                 };
-                const dx = a.position.x - b.position.x;
-                const dy = a.position.y - b.position.y;
-                const distanceSqr = dx * dx + dy * dy;
+                const diff = Vec2.sub(a.position.position, b.position.position);
+                const distanceSqr = Vec2.lengthSqr(diff);
                 if (!CircleCollisionSystem.circlesOverlap(a.circle, b.circle, distanceSqr)) {
                     continue;
                 }
                 const distance = Math.sqrt(distanceSqr);
                 const overlap = (distance - a.circle.radius - b.circle.radius) * 0.5;
-                a.position.x -= overlap * dx / distance;
-                a.position.y -= overlap * dy / distance;
-                b.position.x += overlap * dx / distance;
-                b.position.y += overlap * dy / distance;
-                this.collisions.push({ a, b });
+                const normal = Vec2.div(Vec2.mul(diff, overlap), distance);
+                a.position.position = Vec2.sub(a.position.position, normal);
+                b.position.position = Vec2.add(b.position.position, normal);
+                this.collisions.add({ a, b });
+                const event = new CustomEvent("collision", {
+                    detail: { entityA: entityA, entityB: entityB, velocity: Vec2.add(a.velocity.velocity, b.velocity.velocity) }
+                });
+                dispatchEvent(event);
             }
         }
         for (const { a, b } of this.collisions) {
-            const distance = Math.sqrt((a.position.x - b.position.x) * (a.position.x - b.position.x) + (a.position.y - b.position.y) * (a.position.y - b.position.y));
-            const nx = (b.position.x - a.position.x) / distance;
-            const ny = (b.position.y - a.position.y) / distance;
-            const dotNormalA = a.velocity.vx * nx + a.velocity.vy * ny;
-            const dotNormalB = b.velocity.vx * nx + b.velocity.vy * ny;
-            console.log(nx, ny);
-            const tx = -ny;
-            const ty = nx;
-            const dotTangentA = a.velocity.vx * tx + a.velocity.vy * ty;
-            const dotTangentB = b.velocity.vx * tx + b.velocity.vy * ty;
+            const distance = Vec2.length(Vec2.sub(a.position.position, b.position.position));
+            const normal = Vec2.div(Vec2.sub(a.position.position, b.position.position), distance);
+            const dotNormalA = a.velocity.velocity.x * normal.x + a.velocity.velocity.y * normal.y;
+            const dotNormalB = b.velocity.velocity.x * normal.x + b.velocity.velocity.y * normal.y;
+            const tangent = { x: -normal.y, y: normal.x };
+            const dotTangentA = a.velocity.velocity.x * tangent.x + a.velocity.velocity.y * tangent.y;
+            const dotTangentB = b.velocity.velocity.x * tangent.x + b.velocity.velocity.y * tangent.y;
             const massSum = a.circle.radius + b.circle.radius;
             const momentumA = (dotNormalA * (a.circle.radius - b.circle.radius) + 2.0 * b.circle.radius * dotNormalB) / massSum;
             const momentumB = (dotNormalB * (b.circle.radius - a.circle.radius) + 2.0 * a.circle.radius * dotNormalA) / massSum;
-            a.velocity.vx = dotTangentA * tx + nx * momentumA;
-            a.velocity.vy = dotTangentA * ty + ny * momentumA;
-            b.velocity.vx = dotTangentB * tx + nx * momentumB;
-            b.velocity.vy = dotTangentB * ty + ny * momentumB;
+            a.velocity.velocity = Vec2.add(Vec2.mul(tangent, dotTangentA), Vec2.mul(normal, momentumA));
+            b.velocity.velocity = Vec2.add(Vec2.mul(tangent, dotTangentB), Vec2.mul(normal, momentumB));
         }
     }
     static circlesOverlap(a, b, distanceSqr) {

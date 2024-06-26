@@ -1,8 +1,8 @@
+import { Vec2 } from "../../vec2.js";
 import { Component } from "../component.js";
 export class Position extends Component {
-    constructor(x = 0, y = 0) {
+    constructor(position = Vec2.zero) {
         super();
-        this.x = x;
-        this.y = y;
+        this.position = position;
     }
 }

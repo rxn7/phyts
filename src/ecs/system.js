@@ -3,4 +3,5 @@ export class System {
         this.world = null;
     }
     update(entties, dt) { }
+    physicsUpdate(entities, dt) { }
 }
