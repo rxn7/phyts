@@ -1,4 +1,4 @@
-import { Renderer } from "../../../renderer.js"
+import { Renderer, RendererResizeEvent } from "../../../renderer.js"
 import { Vec2 } from "../../../vec2.js"
 import { ComponentContainer } from "../../componentContainer.js"
 import { Circle } from "../../components/circle.js"
@@ -26,12 +26,22 @@ declare global {
 
 export class CircleBoundarySystem extends System {
 	public requiredComponents: Set<Function> = new Set([Position, Velocity, Circle])
+	private width: number
+	private height: number
 
-	public constructor(public readonly type: BoundaryType, public width: number, public height: number, private readonly renderer: Renderer) {
+	public constructor(public readonly type: BoundaryType, private readonly renderer: Renderer) {
 		super()
+
+		this.width = renderer.canvas.clientWidth
+		this.height = renderer.canvas.clientHeight
+
+		addEventListener('rendererResize', (ev: CustomEvent<RendererResizeEvent>) => {
+			this.width = ev.detail.width
+			this.height = ev.detail.height
+		})
 	}
 
-	public override update (entities: Set<Entity>, dt: number): void {
+	public override update(entities: Set<Entity>, dt: number): void {
 		this.renderer.ctx.beginPath()
 
 		switch(this.type) {
@@ -104,7 +114,7 @@ export class CircleBoundarySystem extends System {
 		velocity.velocity.x -= 2 * dot * normal.x
 		velocity.velocity.y -= 2 * dot * normal.y
 
-		position.position = Vec2.add(center, Vec2.mul(normal, boundaryRadius - circle.radius))
+		position.position = Vec2.add(center, Vec2.mul(normal, boundaryRadius - circle.radius - 0.001))
 
 		const collisionEvent: Event = new CustomEvent<BoundaryCollisionEvent>("boundaryCollision", { detail: { entity: entity, point: Vec2.add(position.position, Vec2.mul(normal, circle.radius)), velocity: velocity.velocity } })
 		dispatchEvent(collisionEvent)

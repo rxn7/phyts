@@ -11,8 +11,4 @@ export abstract class Scene {
 	public update(dt: number): void {
 		this.world.update(dt)
 	}
-
-	public keyPressed(key: string): void {}
-
-	public mousePressed(position: Vec2, btn: number): void {}
 }

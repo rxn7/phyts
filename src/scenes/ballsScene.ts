@@ -5,7 +5,7 @@ import { Entity } from "../ecs/entity.js";
 import { Scene } from "./scene.js";
 import { VelocitySystem } from "../ecs/systems/physics/velocitySystem.js";
 import { CircleRenderSystem } from "../ecs/systems/rendering/circleRenderSystem.js";
-import { Renderer } from "../renderer.js";
+import { Renderer, RendererResizeEvent } from "../renderer.js";
 import { Color } from "../ecs/components/color.js";
 import { BoundaryCollisionEvent, BoundaryType, CircleBoundarySystem } from "../ecs/systems/physics/circleBoundarySystem.js";
 import { CircleCollisionSystem } from "../ecs/systems/physics/circleCollisionSystem.js";
@@ -26,8 +26,8 @@ export class BallsScene extends Scene {
 		super()
 
 		this.world.addSystem(new CircleCollisionSystem())
-		this.world.addSystem(new CircleBoundarySystem(BoundaryType.Circle, renderer.canvas.clientWidth, renderer.canvas.clientHeight, renderer))
-		this.world.addSystem(new VelocitySystem(7.0, 0.0))
+		this.world.addSystem(new CircleBoundarySystem(BoundaryType.Circle, renderer))
+		this.world.addSystem(new VelocitySystem(1.0, 0))
 		this.world.addSystem(new LineRendererSystem(renderer))
 		this.world.addSystem(new CircleRenderSystem(renderer))
 
@@ -38,24 +38,32 @@ export class BallsScene extends Scene {
 			lineRenderer.addLine({end: ev.detail.point})
 
 			const velocity: Velocity = container.get(Velocity)
-
-			this.hitSound.play(1.0, Vec2.length(velocity.velocity) * 0.02)
+			this.playCollideSound(velocity.velocity)
 		})
 
 		addEventListener("collision", (ev: CustomEvent<CollisionEvent>) => {
-			this.hitSound.play(1.0, Vec2.length(ev.detail.velocity) * 0.02)
+			this.playCollideSound(ev.detail.velocity)
+		})
+
+		addEventListener("rendererResize", (ev: CustomEvent<RendererResizeEvent>) => {
+			for(const container of this.world.entities.values()) {
+				const lineRenderer: LineRenderer = container.get(LineRenderer)
+				lineRenderer.clear()
+			}
+		})
+
+		renderer.canvas.addEventListener('click', (ev: MouseEvent) => {
+			const rect: DOMRect = renderer.canvas.getBoundingClientRect()
+
+			switch(ev.button) {
+				case 0:
+					this.spawnBall({x: ev.clientX - rect.left, y: ev.clientY - rect.top})
+			}
 		})
 	}
 
 	public override update(dt: number): void {
 		super.update(dt);
-	}
-
-	public override mousePressed(position: Vec2, btn: number): void {
-		switch(btn) {
-			case 0:
-				this.spawnBall(position)
-		}
 	}
 
 	public spawnBall(position: Vec2 = {x: Math.random() * this.renderer.canvas.clientWidth, y: Math.random() * this.renderer.canvas.clientHeight}): void {
@@ -68,5 +76,9 @@ export class BallsScene extends Scene {
 		this.world.addEntityComponent(entity, new LineRenderer())
 
 		console.log(`Balls spawned: ${this.world.getEntityCount()}`)
+	}
+
+	private playCollideSound(velocity: Vec2): void {
+		this.hitSound.play(Vec2.length(velocity) * 0.03)
 	}
 }

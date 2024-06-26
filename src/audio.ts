@@ -42,7 +42,7 @@ export class Sound {
 		})
 	}
 
-	public play(volume: number = 1.0, pitch: number = 1.0): void {
+	public play(pitch: number = 1.0): void {
 		if(!this.buffer || !context) {
 			return
 		}
@@ -56,13 +56,9 @@ export class Sound {
 			this.sources.delete(source)
 		})
 
-		const gainNode: GainNode = context.createGain()
-		gainNode.gain.value = volume
-
 		source.playbackRate.value = pitch
-		source.connect(gainNode).connect(context.destination)
+		source.connect(context.destination)
 
 		source.start(0)
-
 	}
 }

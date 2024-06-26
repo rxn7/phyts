@@ -6,8 +6,8 @@ import { System } from "./system.js"
 const SIMULATION_UPDATES: number = 20
 
 export class World {
-	private entities: Map<Entity, ComponentContainer> = new Map()
-	private systems: Map<System, Set<Entity>> = new Map()
+	public readonly entities: Map<Entity, ComponentContainer> = new Map()
+	public readonly systems: Map<System, Set<Entity>> = new Map()
 
 	private nextEntityId: number = 0
 	private entityDestroyQueue: Entity[] = []

@@ -6,7 +6,7 @@ export type Line = {
 }
 
 export class LineRenderer extends Component {
-	public lines: Set<Line> = new Set()
+	public readonly lines: Set<Line> = new Set()
 
 	public addLine(line: Line): void {
 		this.lines.add(line)
@@ -14,5 +14,9 @@ export class LineRenderer extends Component {
 
 	public removeLine(line: Line): void {
 		this.lines.delete(line)
+	}
+
+	public clear(): void {
+		this.lines.clear()
 	}
 }
