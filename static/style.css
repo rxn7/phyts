@@ -14,3 +14,27 @@ body {
 	max-width: 100%;
 	max-height: 100%;
 }
+
+.clickable {
+	user-select: none;
+	user-drag: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+	cursor: pointer;
+}
+
+#settings-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 64px;
+	transition: transform 0.5s;
+}
+
+#settings-button:hover {
+	opacity: 0.5;
+	transform: rotate(90deg);
+}
